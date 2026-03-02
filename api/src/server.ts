@@ -1,6 +1,6 @@
 import fastifyCors from '@fastify/cors'
 import fastifySwagger from '@fastify/swagger'
-import fastifySwaggerUI from '@fastify/swagger-ui'
+import fastifyApiReference from '@scalar/fastify-api-reference'
 import fastify from 'fastify'
 import {
   jsonSchemaTransform,
@@ -36,13 +36,38 @@ await app.register(fastifySwagger, {
   transform: jsonSchemaTransform
 })
 
-await app.register(fastifySwaggerUI, {
-  routePrefix: '/docs'
-})
-
 await app.register(fastifyCors, {
   origin: [env.FRONTEND_URL],
   credentials: true
+})
+
+await app.register(fastifyApiReference, {
+  routePrefix: '/docs',
+  configuration: {
+    sources: [
+      {
+        title: 'Bootcamp Treinos API',
+        slug: 'bootcamp-treinos-api',
+        url: '/swagger.json'
+      },
+      {
+        title: 'Auth API',
+        slug: 'auth-api',
+        url: '/api/auth/open-api/generate-schema'
+      }
+    ]
+  }
+})
+
+app.withTypeProvider<ZodTypeProvider>().route({
+  method: 'GET',
+  url: '/swagger.json',
+  schema: {
+    hide: true
+  },
+  handler: async () => {
+    return app.swagger()
+  }
 })
 
 app.withTypeProvider<ZodTypeProvider>().route({
@@ -69,23 +94,17 @@ app.route({
   url: '/api/auth/*',
   async handler(request, reply) {
     try {
-      // Construct request URL
       const url = new URL(request.url, `http://${request.headers.host}`)
-
-      // Convert Fastify headers to standard Headers object
       const headers = new Headers()
       Object.entries(request.headers).forEach(([key, value]) => {
         if (value) headers.append(key, value.toString())
       })
-      // Create Fetch API-compatible request
       const req = new Request(url.toString(), {
         method: request.method,
         headers,
         ...(request.body ? { body: JSON.stringify(request.body) } : {})
       })
-      // Process authentication request
       const response = await auth.handler(req)
-      // Forward response to client
       reply.status(response.status)
       response.headers.forEach((value, key) => {
         reply.header(key, value)
