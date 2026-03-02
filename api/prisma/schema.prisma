@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String        @id @default(uuid())
+  workoutPlans WorkoutPlan[]
+
+  @@map("users")
+}
+
+enum WeekDay {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model WorkoutPlan {
+  id        String   @id @default(uuid())
+  name      String
+  userId    String   @map("user_id")
+  isActive  Boolean  @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user        User         @relation(fields: [userId], references: [id])
+  workoutDays WorkoutDay[]
+
+  @@map("workout_plans")
+}
+
+model WorkoutDay {
+  id            String   @id @default(uuid())
+  name          String
+  workoutPlanId String   @map("workout_plan_id")
+  isRest        Boolean  @default(false) @map("is_rest")
+  weekDay       WeekDay  @map("week_day")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  workoutPlan      WorkoutPlan       @relation(fields: [workoutPlanId], references: [id])
+  workoutExercices WorkoutExercice[]
+
+  @@map("workout_days")
+}
+
+model WorkoutExercice {
+  id                String   @id @default(uuid())
+  name              String
+  workoutDayId      String   @map("workout_day_id")
+  order             Int
+  sets              Int
+  reps              Int
+  restTimeInSeconds Int      @map("rest_time_in_seconds")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  workoutDay WorkoutDay @relation(fields: [workoutDayId], references: [id])
+
+  @@map("workout_exercices")
+}
