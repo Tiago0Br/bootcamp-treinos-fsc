@@ -49,13 +49,14 @@ model WorkoutPlan {
 }
 
 model WorkoutDay {
-  id            String   @id @default(uuid())
-  name          String
-  workoutPlanId String   @map("workout_plan_id")
-  isRest        Boolean  @default(false) @map("is_rest")
-  weekDay       WeekDay  @map("week_day")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  id                         String   @id @default(uuid())
+  name                       String
+  workoutPlanId              String   @map("workout_plan_id")
+  estimatedDurationInSeconds Int      @map("estimated_duration_in_seconds")
+  isRest                     Boolean  @default(false) @map("is_rest")
+  weekDay                    WeekDay  @map("week_day")
+  createdAt                  DateTime @default(now()) @map("created_at")
+  updatedAt                  DateTime @updatedAt @map("updated_at")
 
   workoutPlan      WorkoutPlan       @relation(fields: [workoutPlanId], references: [id])
   workoutExercices WorkoutExercice[]
