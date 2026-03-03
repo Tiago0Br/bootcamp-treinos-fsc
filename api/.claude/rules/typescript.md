@@ -7,6 +7,7 @@ paths:
 
 ## Princípios Básicos
 
+- **SEMPRE** escreva os códigos em inglês
 - **SEMPRE** use TypeScript para escrever código. Não use JavaScript em **hipótese alguma**.
 - **NUNCA** use `any`.
 - **SEMPRE** prefira named exports ao invés de default exports, a menos quando estritamente necessário.

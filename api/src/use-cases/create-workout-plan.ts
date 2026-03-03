@@ -9,6 +9,7 @@ interface InputDto {
     weekDay: WeekDay
     isRest: boolean
     estimatedDurationInSeconds: number
+    coverImageUrl?: string
     exercices: {
       name: string
       order: number
@@ -51,6 +52,7 @@ export class CreateWorkoutPlan {
               weekDay: workoutDay.weekDay,
               isRest: workoutDay.isRest,
               estimatedDurationInSeconds: workoutDay.estimatedDurationInSeconds,
+              coverImageUrl: workoutDay.coverImageUrl,
               workoutExercices: {
                 create: workoutDay.exercices.map((exercice) => ({
                   name: exercice.name,

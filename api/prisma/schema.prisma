@@ -53,6 +53,7 @@ model WorkoutDay {
   name                       String
   workoutPlanId              String   @map("workout_plan_id")
   estimatedDurationInSeconds Int      @map("estimated_duration_in_seconds")
+  coverImageUrl              String?  @map("cover_image_url")
   isRest                     Boolean  @default(false) @map("is_rest")
   weekDay                    WeekDay  @map("week_day")
   createdAt                  DateTime @default(now()) @map("created_at") @db.Timestamptz()
