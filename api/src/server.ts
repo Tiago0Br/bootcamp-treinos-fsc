@@ -11,6 +11,7 @@ import {
 import { z } from 'zod'
 import { env } from './env.js'
 import { auth } from './lib/auth.js'
+import { errorHandler } from './lib/error-handler.js'
 import { workoutPlanRoutes } from './routes/workout-plan.js'
 
 const app = fastify({
@@ -59,6 +60,8 @@ await app.register(fastifyApiReference, {
     ]
   }
 })
+
+app.setErrorHandler(errorHandler)
 
 await app.register(workoutPlanRoutes, { prefix: '/workout-plans' })
 
