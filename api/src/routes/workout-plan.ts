@@ -1,10 +1,11 @@
 import { fromNodeHeaders } from 'better-auth/node'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
-import z from 'zod'
+import { z } from 'zod'
 import { WeekDay } from '../generated/prisma/enums.js'
 import { auth } from '../lib/auth.js'
 import { errorSchema } from '../schemas/index.js'
+import { CompleteWorkoutSession } from '../use-cases/complete-workout-session.js'
 import { CreateWorkoutPlan } from '../use-cases/create-workout-plan.js'
 import { StartWorkoutSession } from '../use-cases/start-workout-session.js'
 
@@ -116,6 +117,60 @@ export function workoutPlanRoutes(app: FastifyInstance) {
       })
 
       return reply.status(201).send(result)
+    }
+  )
+
+  app.withTypeProvider<ZodTypeProvider>().patch(
+    '/:workoutPlanId/days/:workoutDayId/sessions/:workoutSessionId',
+    {
+      schema: {
+        tags: ['Workout Session'],
+        summary: 'Update a workout session',
+        params: z.object({
+          workoutPlanId: z.uuid(),
+          workoutDayId: z.uuid(),
+          workoutSessionId: z.uuid()
+        }),
+        body: z.object({
+          completedAt: z.iso.datetime()
+        }),
+        response: {
+          200: z.object({
+            id: z.uuid(),
+            startedAt: z.iso.datetime(),
+            completedAt: z.iso.datetime()
+          }),
+          401: errorSchema,
+          403: errorSchema,
+          404: errorSchema,
+          500: errorSchema
+        }
+      }
+    },
+    async (request, reply) => {
+      const session = await auth.api.getSession({
+        headers: fromNodeHeaders(request.headers)
+      })
+
+      if (!session) {
+        return reply.status(401).send({
+          error: 'Unauthorized',
+          code: 'UNAUTHORIZED'
+        })
+      }
+
+      const { workoutPlanId, workoutDayId, workoutSessionId } = request.params
+
+      const completeWorkoutSession = new CompleteWorkoutSession()
+      const result = await completeWorkoutSession.execute({
+        userId: session.user.id,
+        workoutPlanId,
+        workoutDayId,
+        workoutSessionId,
+        completedAt: new Date(request.body.completedAt)
+      })
+
+      return reply.status(200).send(result)
     }
   )
 }

@@ -5,3 +5,5 @@
 /src/generated/prisma
 
 /.serena
+
+/tasks/*.md
