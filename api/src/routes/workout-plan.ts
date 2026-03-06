@@ -7,6 +7,7 @@ import { auth } from '../lib/auth.js'
 import { errorSchema } from '../schemas/index.js'
 import { CompleteWorkoutSession } from '../use-cases/complete-workout-session.js'
 import { CreateWorkoutPlan } from '../use-cases/create-workout-plan.js'
+import { GetWorkoutPlan } from '../use-cases/get-workout-plan.js'
 import { StartWorkoutSession } from '../use-cases/start-workout-session.js'
 
 export function workoutPlanRoutes(app: FastifyInstance) {
@@ -69,6 +70,62 @@ export function workoutPlanRoutes(app: FastifyInstance) {
       return reply.status(201).send({
         workoutPlanId
       })
+    }
+  )
+
+  app.withTypeProvider<ZodTypeProvider>().get(
+    '/:id',
+    {
+      schema: {
+        tags: ['Workout Plan'],
+        summary: 'Get a workout plan by id',
+        params: z.object({
+          id: z.uuid()
+        }),
+        response: {
+          200: z.object({
+            id: z.uuid(),
+            name: z.string(),
+            workoutDays: z.array(
+              z.object({
+                id: z.uuid(),
+                weekDay: z.enum(WeekDay),
+                name: z.string(),
+                isRest: z.boolean(),
+                coverImageUrl: z.url().optional(),
+                estimatedDurationInSeconds: z.number(),
+                exercisesCount: z.number()
+              })
+            )
+          }),
+          401: errorSchema,
+          403: errorSchema,
+          404: errorSchema,
+          500: errorSchema
+        }
+      }
+    },
+    async (request, reply) => {
+      const session = await auth.api.getSession({
+        headers: fromNodeHeaders(request.headers)
+      })
+
+      if (!session) {
+        return reply.status(401).send({
+          error: 'Unauthorized',
+          code: 'UNAUTHORIZED'
+        })
+      }
+
+      const { id } = request.params
+
+      const getWorkoutPlan = new GetWorkoutPlan()
+      const result = await getWorkoutPlan.execute({
+        userId: session.user.id,
+        workoutPlanId: id
+      })
+
+      return reply.status(200).send(result)
     }
   )
 
