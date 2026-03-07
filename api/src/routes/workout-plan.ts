@@ -4,14 +4,54 @@ import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import { WeekDay } from '../generated/prisma/enums.js'
 import { auth } from '../lib/auth.js'
-import { errorSchema } from '../schemas/index.js'
+import {
+  errorSchema,
+  listWorkoutPlansQuerySchema,
+  listWorkoutPlansSchema
+} from '../schemas/index.js'
 import { CompleteWorkoutSession } from '../use-cases/complete-workout-session.js'
 import { CreateWorkoutPlan } from '../use-cases/create-workout-plan.js'
 import { GetWorkoutDay } from '../use-cases/get-workout-day.js'
 import { GetWorkoutPlan } from '../use-cases/get-workout-plan.js'
+import { ListWorkoutPlans } from '../use-cases/list-workout-plans.js'
 import { StartWorkoutSession } from '../use-cases/start-workout-session.js'
 
 export function workoutPlanRoutes(app: FastifyInstance) {
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: 'GET',
+    url: '/',
+    schema: {
+      operationId: 'listWorkoutPlans',
+      tags: ['Workout Plan'],
+      summary: 'List workout plans',
+      querystring: listWorkoutPlansQuerySchema,
+      response: {
+        200: listWorkoutPlansSchema,
+        401: errorSchema,
+        500: errorSchema
+      }
+    },
+    handler: async (request, reply) => {
+      const session = await auth.api.getSession({
+        headers: fromNodeHeaders(request.headers)
+      })
+      if (!session) {
+        return reply.status(401).send({
+          error: 'Unauthorized',
+          code: 'UNAUTHORIZED'
+        })
+      }
+
+      const listWorkoutPlans = new ListWorkoutPlans()
+      const result = await listWorkoutPlans.execute({
+        userId: session.user.id,
+        active: request.query.active
+      })
+
+      return reply.status(200).send(result)
+    }
+  })
+
   app.withTypeProvider<ZodTypeProvider>().post(
     '',
     {
