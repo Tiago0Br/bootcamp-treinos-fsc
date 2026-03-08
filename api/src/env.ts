@@ -4,8 +4,11 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(3000),
   DATABASE_URL: z.string(),
   BETTER_AUTH_SECRET: z.string(),
+  API_URL: z.url(),
   FRONTEND_URL: z.url(),
-  NODE_ENV: z.enum(['production', 'development']).default('development')
+  NODE_ENV: z.enum(['production', 'development']).default('development'),
+  GOOGLE_CLIENT_ID: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string()
 })
 
 const result = envSchema.safeParse(process.env)
