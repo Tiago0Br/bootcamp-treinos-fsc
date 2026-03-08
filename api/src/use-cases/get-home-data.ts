@@ -1,6 +1,5 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc.js'
-import { NotFoundError } from '../errors/index.js'
 import { WeekDay } from '../generated/prisma/enums.js'
 import { prisma } from '../lib/prisma.js'
 
@@ -27,8 +26,8 @@ interface ConsistencyEntry {
 }
 
 interface OutputDto {
-  activeWorkoutPlanId: string
-  todayWorkoutDay: {
+  activeWorkoutPlanId?: string
+  todayWorkoutDay?: {
     workoutPlanId: string
     id: string
     name: string
@@ -58,20 +57,12 @@ export class GetHomeData {
       }
     })
 
-    if (!activeWorkoutPlan) {
-      throw new NotFoundError('No active workout plan found')
-    }
-
     const date = dayjs.utc(dto.date)
     const todayWeekDay = DAY_INDEX_TO_WEEK_DAY[date.day()]
 
-    const todayWorkoutDay = activeWorkoutPlan.workoutDays.find(
+    const todayWorkoutDay = activeWorkoutPlan?.workoutDays.find(
       (day) => day.weekDay === todayWeekDay
     )
-
-    if (!todayWorkoutDay) {
-      throw new NotFoundError('No workout day found for today')
-    }
 
     const weekStart = date.startOf('week')
     const weekEnd = date.endOf('week')
@@ -130,7 +121,7 @@ export class GetHomeData {
     )
 
     const planWeekDays = new Set(
-      activeWorkoutPlan.workoutDays.map((d) => d.weekDay)
+      activeWorkoutPlan?.workoutDays.map((d) => d.weekDay)
     )
 
     let workoutStreak = 0
@@ -153,17 +144,21 @@ export class GetHomeData {
     }
 
     return {
-      activeWorkoutPlanId: activeWorkoutPlan.id,
-      todayWorkoutDay: {
-        workoutPlanId: activeWorkoutPlan.id,
-        id: todayWorkoutDay.id,
-        name: todayWorkoutDay.name,
-        isRest: todayWorkoutDay.isRest,
-        weekDay: todayWorkoutDay.weekDay,
-        estimatedDurationInSeconds: todayWorkoutDay.estimatedDurationInSeconds,
-        coverImageUrl: todayWorkoutDay.coverImageUrl ?? undefined,
-        exercisesCount: todayWorkoutDay.workoutExercices.length
-      },
+      activeWorkoutPlanId: activeWorkoutPlan?.id,
+      todayWorkoutDay:
+        activeWorkoutPlan && todayWorkoutDay
+          ? {
+              workoutPlanId: activeWorkoutPlan.id,
+              id: todayWorkoutDay.id,
+              name: todayWorkoutDay.name,
+              isRest: todayWorkoutDay.isRest,
+              weekDay: todayWorkoutDay.weekDay,
+              estimatedDurationInSeconds:
+                todayWorkoutDay.estimatedDurationInSeconds,
+              coverImageUrl: todayWorkoutDay.coverImageUrl ?? undefined,
+              exercisesCount: todayWorkoutDay.workoutExercices.length
+            }
+          : undefined,
       workoutStreak,
       consistencyByDay
     }
