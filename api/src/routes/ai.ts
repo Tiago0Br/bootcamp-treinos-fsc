@@ -1,4 +1,4 @@
-import { openai } from '@ai-sdk/openai'
+import { google } from '@ai-sdk/google'
 import {
   convertToModelMessages,
   stepCountIs,
@@ -10,7 +10,6 @@ import { fromNodeHeaders } from 'better-auth/node'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import z from 'zod'
-
 import { WeekDay } from '../generated/prisma/enums.js'
 import { auth } from '../lib/auth.js'
 import { CreateWorkoutPlan } from '../use-cases/create-workout-plan.js'
@@ -42,7 +41,7 @@ export const aiRoutes = async (app: FastifyInstance) => {
       const { messages } = request.body as { messages: UIMessage[] }
 
       const result = streamText({
-        model: openai('gpt-4o-mini'),
+        model: google('gemini-2.5-flash'),
         system: AI_PROMPT,
         messages: await convertToModelMessages(messages),
         stopWhen: stepCountIs(10),
