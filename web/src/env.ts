@@ -5,9 +5,12 @@ const envSchema = z.object({
   NEXT_PUBLIC_BASE_URL: z.string()
 })
 
-const result = envSchema.safeParse(process.env)
+const result = envSchema.safeParse({
+  NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL
+})
 
-if (!result.success) {
+if (!result.data) {
   console.error('Invalid environment variables:', result.error.message)
   throw new Error('Invalid environment variables')
 }
