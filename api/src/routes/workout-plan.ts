@@ -56,6 +56,9 @@ export function workoutPlanRoutes(app: FastifyInstance) {
     '',
     {
       schema: {
+        operationId: 'createWorkoutPlans',
+        tags: ['Workout Plan'],
+        summary: 'Create a new workout plan',
         body: z.object({
           name: z.string().trim().min(1),
           workoutDays: z.array(
@@ -118,6 +121,7 @@ export function workoutPlanRoutes(app: FastifyInstance) {
     '/:id',
     {
       schema: {
+        operationId: 'getWorkoutPlanById',
         tags: ['Workout Plan'],
         summary: 'Get a workout plan by id',
         params: z.object({
@@ -174,6 +178,7 @@ export function workoutPlanRoutes(app: FastifyInstance) {
     '/:workoutPlanId/days/:workoutDayId',
     {
       schema: {
+        operationId: 'getWorkoutDayById',
         tags: ['Workout Plan'],
         summary: 'Get a workout day by id',
         params: z.object({
@@ -244,7 +249,8 @@ export function workoutPlanRoutes(app: FastifyInstance) {
     '/:workoutPlanId/days/:workoutDayId/sessions',
     {
       schema: {
-        tags: ['Workout Session'],
+        operationId: 'startWorkoutSession',
+        tags: ['Workout Plan'],
         summary: 'Start a workout session for a workout day',
         params: z.object({
           workoutPlanId: z.uuid(),
@@ -292,7 +298,8 @@ export function workoutPlanRoutes(app: FastifyInstance) {
     '/:workoutPlanId/days/:workoutDayId/sessions/:workoutSessionId',
     {
       schema: {
-        tags: ['Workout Session'],
+        operationId: 'updateWorkoutSession',
+        tags: ['Workout Plan'],
         summary: 'Update a workout session',
         params: z.object({
           workoutPlanId: z.uuid(),

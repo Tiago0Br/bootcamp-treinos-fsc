@@ -69,44 +69,50 @@ app.setErrorHandler(errorHandler)
 
 // Routes
 await app.register(homeRoutes, { prefix: '/home' })
-await app.register(usersRoutes, { prefix: '/users' })
+await app.register(usersRoutes, { prefix: '/me' })
 await app.register(statsRoutes, { prefix: '/stats' })
 await app.register(workoutPlanRoutes, { prefix: '/workout-plans' })
 await app.register(aiRoutes, { prefix: '/ai' })
 
-app.withTypeProvider<ZodTypeProvider>().route({
-  method: 'GET',
-  url: '/swagger.json',
-  schema: {
-    hide: true
-  },
-  handler: async () => {
-    return app.swagger()
-  }
-})
-
-app.withTypeProvider<ZodTypeProvider>().route({
-  method: 'GET',
-  url: '/',
-  schema: {
-    description: 'Verify if API is running',
-    tags: ['health'],
-    response: {
-      200: z.object({
-        message: z.string()
-      })
+app.withTypeProvider<ZodTypeProvider>().get(
+  '/swagger.json',
+  {
+    schema: {
+      hide: true
     }
   },
-  handler: () => {
+  async () => {
+    return app.swagger()
+  }
+)
+
+app.withTypeProvider<ZodTypeProvider>().get(
+  '/',
+  {
+    schema: {
+      summary: 'Health Check',
+      description: 'Verify if API is running',
+      tags: ['health'],
+      response: {
+        200: z.object({
+          message: z.string()
+        })
+      }
+    }
+  },
+  () => {
     return {
       message: 'API is running!'
     }
   }
-})
+)
 
 app.route({
   method: ['GET', 'POST'],
   url: '/api/auth/*',
+  schema: {
+    hide: true
+  },
   async handler(request, reply) {
     try {
       const url = new URL(request.url, `http://${request.headers.host}`)

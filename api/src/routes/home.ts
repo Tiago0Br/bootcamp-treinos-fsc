@@ -11,6 +11,7 @@ export function homeRoutes(app: FastifyInstance) {
     '/:date',
     {
       schema: {
+        operationId: 'getHomeData',
         tags: ['Home'],
         summary: 'Get home page data for a specific date',
         params: z.object({

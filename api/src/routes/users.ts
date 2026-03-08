@@ -18,9 +18,10 @@ const userTrainDataSchema = z.object({
 
 export function usersRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
-    '/me',
+    '',
     {
       schema: {
+        operationId: 'getUserTrainData',
         tags: ['Users'],
         summary: 'Get current user train data',
         response: {
@@ -53,6 +54,7 @@ export function usersRoutes(app: FastifyInstance) {
     '/me',
     {
       schema: {
+        operationId: 'createOrUpdateUserTrainData',
         tags: ['Users'],
         summary: 'Create or update current user train data',
         body: z.object({
