@@ -21,7 +21,12 @@
       "recommended": true,
       "suspicious": {
         "noUnknownAtRules": "off",
-        "noConfusingVoidType": "off"
+        "noConfusingVoidType": "off",
+        "noArrayIndexKey": "off"
+      },
+      "a11y": {
+        "noStaticElementInteractions": "off",
+        "useKeyWithClickEvents": "off"
       }
     },
     "domains": {

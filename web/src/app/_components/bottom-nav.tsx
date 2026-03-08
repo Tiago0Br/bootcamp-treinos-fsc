@@ -3,12 +3,12 @@ import {
   CalendarIcon,
   ChartNoAxesColumnIcon,
   HouseIcon,
-  SparklesIcon,
   UserRoundIcon
 } from 'lucide-react'
 import Link from 'next/link'
 import { getHomeData } from '@/lib/api/fetch-generated'
 import { cn } from '@/lib/utils'
+import { ChatOpenButton } from './chat-open-button'
 
 interface BottomNavProps {
   activePage?: 'home' | 'calendar' | 'stats' | 'profile'
@@ -56,9 +56,7 @@ export async function BottomNav({ activePage = 'home' }: BottomNavProps) {
           />
         </button>
       )}
-      <button type="button" className="rounded-full bg-primary p-4">
-        <SparklesIcon className="size-6 text-primary-foreground" />
-      </button>
+      <ChatOpenButton />
       <Link href="/stats" className="p-3">
         <ChartNoAxesColumnIcon
           className={cn(
