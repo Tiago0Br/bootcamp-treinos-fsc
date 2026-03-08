@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getHomeData } from '@/lib/api/fetch-generated'
 import { authClient } from '@/lib/auth-client'
+import { BottomNav } from './_components/bottom-nav'
 import { ConsistencyTracker } from './_components/consistency-tracker'
 import { WorkoutDayCard } from './_components/workout-day-card'
 
@@ -126,6 +127,8 @@ export default async function Home() {
           </Link>
         </div>
       )}
+
+      <BottomNav />
     </div>
   )
 }
