@@ -14,6 +14,7 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { env } from '@/env'
 
 const SUGGESTED_MESSAGES = ['Monte meu plano de treino']
 
@@ -36,7 +37,7 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
 
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
-      api: `${process.env.NEXT_PUBLIC_API_URL}/ai`,
+      api: `${env.NEXT_PUBLIC_API_URL}/ai`,
       credentials: 'include'
     })
   })
