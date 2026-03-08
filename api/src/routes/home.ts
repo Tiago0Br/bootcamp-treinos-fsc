@@ -2,6 +2,7 @@ import { fromNodeHeaders } from 'better-auth/node'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
+import { WeekDay } from '../generated/prisma/enums.js'
 import { auth } from '../lib/auth.js'
 import { errorSchema } from '../schemas/index.js'
 import { GetHomeData } from '../use-cases/get-home-data.js'
@@ -26,7 +27,7 @@ export function homeRoutes(app: FastifyInstance) {
                 id: z.uuid(),
                 name: z.string(),
                 isRest: z.boolean(),
-                weekDay: z.string(),
+                weekDay: z.enum(WeekDay),
                 estimatedDurationInSeconds: z.number(),
                 coverImageUrl: z.url().optional(),
                 exercisesCount: z.number()

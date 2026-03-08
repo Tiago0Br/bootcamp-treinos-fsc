@@ -32,7 +32,7 @@ interface OutputDto {
     id: string
     name: string
     isRest: boolean
-    weekDay: string
+    weekDay: WeekDay
     estimatedDurationInSeconds: number
     coverImageUrl?: string
     exercisesCount: number

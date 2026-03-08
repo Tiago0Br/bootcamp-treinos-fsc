@@ -6,6 +6,19 @@
  * OpenAPI spec version: 1.0.0
  */
 import { customFetch } from '../../fetch'
+export type GetHomeData200TodayWorkoutDayWeekDay =
+  (typeof GetHomeData200TodayWorkoutDayWeekDay)[keyof typeof GetHomeData200TodayWorkoutDayWeekDay]
+
+export const GetHomeData200TodayWorkoutDayWeekDay = {
+  MONDAY: 'MONDAY',
+  TUESDAY: 'TUESDAY',
+  WEDNESDAY: 'WEDNESDAY',
+  THURSDAY: 'THURSDAY',
+  FRIDAY: 'FRIDAY',
+  SATURDAY: 'SATURDAY',
+  SUNDAY: 'SUNDAY'
+} as const
+
 export type GetHomeData200TodayWorkoutDay = {
   /** @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$ */
   workoutPlanId: string
@@ -13,7 +26,7 @@ export type GetHomeData200TodayWorkoutDay = {
   id: string
   name: string
   isRest: boolean
-  weekDay: string
+  weekDay: GetHomeData200TodayWorkoutDayWeekDay
   estimatedDurationInSeconds: number
   coverImageUrl?: string
   exercisesCount: number
@@ -28,18 +41,13 @@ export type GetHomeData200ConsistencyByDay = {
 
 export type GetHomeData200 = {
   /** @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$ */
-  activeWorkoutPlanId: string
-  todayWorkoutDay: GetHomeData200TodayWorkoutDay
+  activeWorkoutPlanId?: string
+  todayWorkoutDay?: GetHomeData200TodayWorkoutDay
   workoutStreak: number
   consistencyByDay: GetHomeData200ConsistencyByDay
 }
 
 export type GetHomeData401 = {
-  error: string
-  code: string
-}
-
-export type GetHomeData404 = {
   error: string
   code: string
 }
@@ -472,11 +480,6 @@ export type getHomeDataResponse401 = {
   status: 401
 }
 
-export type getHomeDataResponse404 = {
-  data: GetHomeData404
-  status: 404
-}
-
 export type getHomeDataResponse500 = {
   data: GetHomeData500
   status: 500
@@ -487,7 +490,6 @@ export type getHomeDataResponseSuccess = getHomeDataResponse200 & {
 }
 export type getHomeDataResponseError = (
   | getHomeDataResponse401
-  | getHomeDataResponse404
   | getHomeDataResponse500
 ) & {
   headers: Headers
