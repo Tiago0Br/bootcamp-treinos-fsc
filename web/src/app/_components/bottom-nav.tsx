@@ -1,10 +1,10 @@
 import dayjs from 'dayjs'
 import {
-  Calendar,
-  ChartNoAxesColumn,
-  House,
+  CalendarIcon,
+  ChartNoAxesColumnIcon,
+  HouseIcon,
   SparklesIcon,
-  UserRound
+  UserRoundIcon
 } from 'lucide-react'
 import Link from 'next/link'
 import { getHomeData } from '@/lib/api/fetch-generated'
@@ -26,7 +26,7 @@ export async function BottomNav({ activePage = 'home' }: BottomNavProps) {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-center gap-6 rounded-t-4xl border border-border bg-background px-6 py-4">
       <Link href="/" className="p-3">
-        <House
+        <HouseIcon
           className={cn(
             'size-6',
             activePage === 'home' ? 'text-foreground' : 'text-muted-foreground'
@@ -35,7 +35,7 @@ export async function BottomNav({ activePage = 'home' }: BottomNavProps) {
       </Link>
       {calendarHref ? (
         <Link href={calendarHref} className="p-3">
-          <Calendar
+          <CalendarIcon
             className={cn(
               'size-6',
               activePage === 'calendar'
@@ -46,7 +46,7 @@ export async function BottomNav({ activePage = 'home' }: BottomNavProps) {
         </Link>
       ) : (
         <button type="button" className="p-3">
-          <Calendar
+          <CalendarIcon
             className={cn(
               'size-6',
               activePage === 'calendar'
@@ -60,7 +60,7 @@ export async function BottomNav({ activePage = 'home' }: BottomNavProps) {
         <SparklesIcon className="size-6 text-primary-foreground" />
       </button>
       <Link href="/stats" className="p-3">
-        <ChartNoAxesColumn
+        <ChartNoAxesColumnIcon
           className={cn(
             'size-6',
             activePage === 'stats' ? 'text-foreground' : 'text-muted-foreground'
@@ -68,7 +68,7 @@ export async function BottomNav({ activePage = 'home' }: BottomNavProps) {
         />
       </Link>
       <Link href="/profile" className="p-3">
-        <UserRound
+        <UserRoundIcon
           className={cn(
             'size-6',
             activePage === 'profile'
