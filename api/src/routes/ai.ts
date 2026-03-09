@@ -18,7 +18,7 @@ import { ListWorkoutPlans } from '../use-cases/list-workout-plans.js'
 import { UpsertUserTrainData } from '../use-cases/upsert-user-train-data.js'
 import { AI_PROMPT } from '../utils/ai-prompt.js'
 
-export const aiRoutes = async (app: FastifyInstance) => {
+export async function aiRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
     '/',
     {

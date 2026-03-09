@@ -8,18 +8,32 @@ import {
   validatorCompiler,
   type ZodTypeProvider
 } from 'fastify-type-provider-zod'
-import { z } from 'zod'
 import { env } from './env.js'
-import { auth } from './lib/auth.js'
 import { errorHandler } from './lib/error-handler.js'
 import { aiRoutes } from './routes/ai.js'
+import { authRoutes } from './routes/auth.js'
+import { healthCheckRoute } from './routes/health.js'
 import { homeRoutes } from './routes/home.js'
 import { statsRoutes } from './routes/stats.js'
 import { usersRoutes } from './routes/users.js'
 import { workoutPlanRoutes } from './routes/workout-plan.js'
 
+const envToLogger = {
+  development: {
+    transport: {
+      target: 'pino-pretty',
+      options: {
+        translateTime: 'HH:MM:ss Z',
+        ignore: 'pid,hostname'
+      }
+    }
+  },
+  production: true,
+  test: false
+}
+
 const app = fastify({
-  logger: true
+  logger: envToLogger[env.NODE_ENV]
 })
 
 app.setValidatorCompiler(validatorCompiler)
@@ -35,7 +49,7 @@ await app.register(fastifySwagger, {
     servers: [
       {
         description: 'Local',
-        url: `http://localhost:${env.PORT}`
+        url: env.API_URL
       }
     ]
   },
@@ -68,6 +82,7 @@ await app.register(fastifyApiReference, {
 app.setErrorHandler(errorHandler)
 
 // Routes
+await app.register(healthCheckRoute, { prefix: '/' })
 await app.register(homeRoutes, { prefix: '/home' })
 await app.register(usersRoutes, { prefix: '/me' })
 await app.register(statsRoutes, { prefix: '/stats' })
@@ -86,60 +101,7 @@ app.withTypeProvider<ZodTypeProvider>().get(
   }
 )
 
-app.withTypeProvider<ZodTypeProvider>().get(
-  '/',
-  {
-    schema: {
-      summary: 'Health Check',
-      description: 'Verify if API is running',
-      tags: ['health'],
-      response: {
-        200: z.object({
-          message: z.string()
-        })
-      }
-    }
-  },
-  () => {
-    return {
-      message: 'API is running!'
-    }
-  }
-)
-
-app.route({
-  method: ['GET', 'POST'],
-  url: '/api/auth/*',
-  schema: {
-    hide: true
-  },
-  async handler(request, reply) {
-    try {
-      const url = new URL(request.url, `http://${request.headers.host}`)
-      const headers = new Headers()
-      Object.entries(request.headers).forEach(([key, value]) => {
-        if (value) headers.append(key, value.toString())
-      })
-      const req = new Request(url.toString(), {
-        method: request.method,
-        headers,
-        ...(request.body ? { body: JSON.stringify(request.body) } : {})
-      })
-      const response = await auth.handler(req)
-      reply.status(response.status)
-      response.headers.forEach((value, key) => {
-        reply.header(key, value)
-      })
-      reply.send(response.body ? await response.text() : null)
-    } catch {
-      app.log.error('Authentication Error')
-      reply.status(500).send({
-        error: 'Internal authentication error',
-        code: 'AUTH_FAILURE'
-      })
-    }
-  }
-})
+app.register(authRoutes)
 
 try {
   await app.listen({ port: env.PORT })
