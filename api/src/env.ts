@@ -11,7 +11,8 @@ const envSchema = z.object({
     .default('development'),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
-  GOOGLE_GENERATIVE_AI_API_KEY: z.string()
+  GOOGLE_GENERATIVE_AI_API_KEY: z.string(),
+  APP_DOMAIN: z.string().optional()
 })
 
 const result = envSchema.safeParse(process.env)
