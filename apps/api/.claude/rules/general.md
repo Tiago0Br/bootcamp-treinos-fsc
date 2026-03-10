@@ -45,7 +45,7 @@ pnpm lint               # Executa o lint do Biome
 
 ### Documentação da API
 
-Swagger UI disponível em `/docs` quando o servidor está rodando (porta 4949).
+Swagger UI disponível em `/docs` quando o servidor está rodando (porta 8080).
 
 ## MCPs
 

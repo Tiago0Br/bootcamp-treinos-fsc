@@ -55,7 +55,7 @@ The API follows a strict **Route → Use Case** pattern:
 - Use Cases must map Prisma results to `OutputDto` — never return Prisma models directly.
 - Use `z.enum(WeekDay)` from `../generated/prisma/enums.js` for week day fields, never `z.string()`.
 - Always include `tags` and `summary` in route schemas for Swagger docs.
-- API docs available at `/docs` when server is running (port 4949).
+- API docs available at `/docs` when server is running (port 8080).
 
 ## Web Architecture
 
